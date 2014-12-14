@@ -9,8 +9,10 @@ import datetime, threading, time
 
 from bts import BTS
 import exchanges as ex
-from math import fabs
+from math import fabs, ceil
 import os
+
+import random
 
 ## Loading Config
 config_file = open("config.json")
@@ -160,9 +162,9 @@ def display_price():
         continue
       publish_feeds.append([asset, price_median_exchange[asset]*discount])
       price_publish_last[asset] = price_median_exchange[asset]
-    for delegate in delegate_list:
+    for delegate in random.sample(delegate_list,ceil(len(delegate_list)/2)):
       client.publish_feeds(delegate, publish_feeds)
-
+      
 def thread_get_rate_from_yahoo():
   global rate_cny
   try:

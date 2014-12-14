@@ -32,3 +32,5 @@ how to use this script?
 
    ./bts_feed_auto.py USD CNY GLD
 
+
+5. if there're multiple delegates for price feed publishing, script will randomly pick half number of delegates to publish feed each time
