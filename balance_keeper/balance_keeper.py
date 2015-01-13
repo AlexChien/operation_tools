@@ -4,6 +4,7 @@
 # This is a script which connects to a delegate periodically to check if the pay balance is at a,
 # threshold set in the config.json file. If it is, it sends the balance_threshold amount to the payto account
 # specified.
+# if each delegate has seperate payto account, delete can be set as 'delegate_name|pay_to_different_account' and payto_account will serve as default payto account, pay_to_different_account will override default payto_account for this particular delegate
 
 import requests
 import sys
@@ -29,7 +30,7 @@ url = config["bts_rpc"]["url"]
 WALLET_NAME = config["wallet_name"]
 
 DELEGATE_NAMES = config["delegate_name"]
-PAYTO = config["payto_account"]
+DEFAULT_PAYTO = config["payto_account"]
 THRESH = config["balance_threshold"]
 
 def parse_date(date):
@@ -63,7 +64,15 @@ while True:
     os.system("clear")
     print("\nRunning Balance Keeper: %s" % time.strftime("%Y%m%dT%H%M%S", time.localtime(time.time())))
 
-    for DELEGATE_NAME in DELEGATE_NAMES:
+    for DELEGATE_NAME_SETTING in DELEGATE_NAMES:
+      # use individual delegate|payto setting, otherwise, use default payto
+      data = DELEGATE_NAME_SETTING.split('|')
+      DELEGATE_NAME = data[0]
+      if len(data) > 1:
+        PAYTO = data[1]
+      else:
+        PAYTO = DEFAULT_PAYTO
+
       response = call("wallet_get_account", [DELEGATE_NAME] )
       if "error" in response:
         print("FATAL: Failed to get info:")
