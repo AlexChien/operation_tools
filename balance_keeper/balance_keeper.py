@@ -4,7 +4,7 @@
 # This is a script which connects to a delegate periodically to check if the pay balance is at a,
 # threshold set in the config.json file. If it is, it sends the balance_threshold amount to the payto account
 # specified.
-# if each delegate has seperate payto account, delete can be set as 'delegate_name|pay_to_different_account' and payto_account will serve as default payto account, pay_to_different_account will override default payto_account for this particular delegate
+# if each delegate has seperate payto account, delegate can be set as 'delegate_name|pay_to_different_account|different_threshold' and payto_account will serve as default payto account, pay_to_different_account will override default payto_account for this particular delegate, same applies to threshold
 
 import requests
 import sys
@@ -31,7 +31,7 @@ WALLET_NAME = config["wallet_name"]
 
 DELEGATE_NAMES = config["delegate_name"]
 DEFAULT_PAYTO = config["payto_account"]
-THRESH = config["balance_threshold"]
+DEFAULT_THRESH = config["balance_threshold"]
 
 def parse_date(date):
   return datetime.datetime.strptime(date, "%Y%m%dT%H%M%S")
@@ -73,6 +73,11 @@ while True:
       else:
         PAYTO = DEFAULT_PAYTO
 
+      if len(data) > 2:
+        THRESH = int(data[2])
+      else:
+        THRESH = DEFAULT_THRESH
+
       response = call("wallet_get_account", [DELEGATE_NAME] )
       if "error" in response:
         print("FATAL: Failed to get info:")
@@ -83,6 +88,7 @@ while True:
       balance = response["delegate_info"]["pay_balance"] / BTS_PRECISION
 
       print ("%s: %s BTS" % (DELEGATE_NAME, balance))
+      print ("CHECK THRESH: %s BTS" % THRESH)
 
       if balance > THRESH:
          print(">> wallet_delegate_withdraw_pay %s, %s, %s" % (DELEGATE_NAME, PAYTO, THRESH))
