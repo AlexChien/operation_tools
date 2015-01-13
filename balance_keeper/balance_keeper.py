@@ -87,8 +87,7 @@ while True:
 
       balance = response["delegate_info"]["pay_balance"] / BTS_PRECISION
 
-      print ("%s: %s BTS" % (DELEGATE_NAME, balance))
-      print ("CHECK THRESH: %s BTS" % THRESH)
+      print ("%s: %s BTS (thresh: %s)" % (DELEGATE_NAME, balance, THRESH))
 
       if balance > THRESH:
          print(">> wallet_delegate_withdraw_pay %s, %s, %s" % (DELEGATE_NAME, PAYTO, THRESH))
